@@ -9,11 +9,9 @@ import prologueData from '@/data/prologue';
 export default function ProloguePage() {
   const { currentSegmentIndex, interactionPhase, triggerInteraction } = useGameStore();
 
-  // Watch for segments that trigger interactions
   useEffect(() => {
     const segment = prologueData.storySegments[currentSegmentIndex];
     if (segment?.triggerInteraction && interactionPhase === 'idle') {
-      // Small delay to let the typewriter finish
       const timer = setTimeout(() => {
         triggerInteraction(segment.triggerInteraction!);
       }, 800);
@@ -22,7 +20,7 @@ export default function ProloguePage() {
   }, [currentSegmentIndex, interactionPhase, triggerInteraction]);
 
   return (
-    <div className="h-full w-full flex flex-col noise-bg ink-wash-bg">
+    <div className="h-full w-full flex flex-col" style={{ backgroundColor: 'var(--color-bg)' }}>
       <TopNav />
       <div className="flex-1 pt-14">
         <GameLayout

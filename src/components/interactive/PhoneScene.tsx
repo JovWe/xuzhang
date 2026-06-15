@@ -1,6 +1,6 @@
 import { useGameStore } from '@/store/gameStore';
 import prologueData from '@/data/prologue';
-import { Phone, PhoneOff, Volume2 } from 'lucide-react';
+import { Phone, PhoneOff, ChevronLeft, MoreHorizontal, Signal, Wifi, Battery } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 export default function PhoneScene() {
@@ -16,11 +16,9 @@ export default function PhoneScene() {
 
   const interaction = activeInteraction ? prologueData.interactions[activeInteraction] : null;
   const dialogues = interaction?.dialogues || [];
-  const currentDialogue = dialogues[dialogueIndex];
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll chat to bottom
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -42,124 +40,135 @@ export default function PhoneScene() {
     }
   };
 
-  const getBubbleStyle = (speaker: string) => {
-    switch (speaker) {
-      case 'caller':
-        return {
-          bg: 'rgba(201, 169, 110, 0.1)',
-          border: '1px solid rgba(201, 169, 110, 0.2)',
-          color: 'var(--color-paper)',
-          align: 'self-start',
-        };
-      case 'player':
-        return {
-          bg: 'rgba(201, 169, 110, 0.2)',
-          border: '1px solid rgba(201, 169, 110, 0.3)',
-          color: 'var(--color-paper)',
-          align: 'self-end',
-        };
-      case 'system':
-        return {
-          bg: 'transparent',
-          border: 'none',
-          color: 'var(--color-slate)',
-          align: 'self-center',
-        };
-      default:
-        return {
-          bg: 'rgba(201, 169, 110, 0.1)',
-          border: '1px solid rgba(201, 169, 110, 0.2)',
-          color: 'var(--color-paper)',
-          align: 'self-start',
-        };
-    }
-  };
-
   return (
-    <div className="h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-ink)' }}>
+    <div className="h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
       {/* 手机模型 */}
       <div
-        className="w-[300px] rounded-[2.5rem] border-2 border-amber-900/20 overflow-hidden"
+        className="w-[320px] rounded-[2.5rem] border-2 overflow-hidden"
         style={{
-          backgroundColor: 'var(--color-ink-light)',
-          boxShadow: '0 0 40px rgba(201, 169, 110, 0.08), 0 0 80px rgba(0, 0, 0, 0.4)',
+          backgroundColor: '#1a1a1a',
+          borderColor: '#333333',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1)',
         }}
       >
-        {/* 顶部状态栏 */}
-        <div className="h-10 flex items-center justify-between px-6 pt-2">
-          <span className="text-xs" style={{ color: 'var(--color-slate)' }}>21:47</span>
+        {/* 顶部刘海区域 */}
+        <div className="h-7 flex items-center justify-center relative" style={{ backgroundColor: '#1a1a1a' }}>
+          <div className="w-20 h-5 rounded-full" style={{ backgroundColor: '#1a1a1a' }} />
+        </div>
+
+        {/* 状态栏 */}
+        <div className="h-6 flex items-center justify-between px-6" style={{ backgroundColor: 'var(--color-wechat-header)' }}>
+          <span className="text-[10px] font-medium" style={{ color: 'var(--color-text)' }}>18:30</span>
           <div className="flex items-center gap-1">
-            <Volume2 size={12} style={{ color: 'var(--color-slate)' }} />
+            <Signal size={12} style={{ color: 'var(--color-text)' }} />
+            <Wifi size={12} style={{ color: 'var(--color-text)' }} />
+            <Battery size={12} style={{ color: 'var(--color-text)' }} />
           </div>
         </div>
 
+        {/* 微信聊天头部 */}
+        <div className="h-11 flex items-center justify-between px-4" style={{ backgroundColor: 'var(--color-wechat-header)', borderBottom: '1px solid #d5d3cf' }}>
+          <div className="flex items-center gap-1">
+            <ChevronLeft size={18} style={{ color: 'var(--color-text)' }} />
+            <span className="text-sm" style={{ color: 'var(--color-text)' }}>微信</span>
+          </div>
+          <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>
+            {interaction?.callerName || '微信'}
+          </span>
+          <MoreHorizontal size={18} style={{ color: 'var(--color-text)' }} />
+        </div>
+
         {/* 屏幕内容 */}
-        <div className="h-[420px] flex flex-col">
+        <div className="h-[420px] flex flex-col" style={{ backgroundColor: 'var(--color-wechat-bg)' }}>
           {/* 来电显示区域 */}
           {interactionPhase === 'ringing' && (
             <div className="flex-1 flex flex-col items-center justify-center gap-6 animate-ring">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(201, 169, 110, 0.1)' }}
+                style={{ backgroundColor: 'rgba(149, 236, 105, 0.2)' }}
               >
-                <Phone size={28} style={{ color: 'var(--color-amber)' }} />
+                <Phone size={28} style={{ color: '#07c160' }} />
               </div>
 
               <div className="text-center">
-                <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-paper)' }}>
+                <p className="text-lg font-semibold mb-1" style={{ color: 'var(--color-text)' }}>
                   {interaction?.callerName}
                 </p>
-                <p className="text-sm" style={{ color: 'var(--color-slate)' }}>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   {interaction?.callerNumber}
                 </p>
               </div>
 
-              <p className="text-xs animate-breathe" style={{ color: 'var(--color-amber)' }}>
-                来电中……
+              <p className="text-xs animate-breathe" style={{ color: '#07c160' }}>
+                语音来电中……
               </p>
             </div>
           )}
 
-          {/* 通话中 - 聊天区域 */}
+          {/* 微信聊天区域 */}
           {(interactionPhase === 'connected' || interactionPhase === 'chatting') && (
-            <div className="flex-1 flex flex-col p-4">
-              {/* 通话状态 */}
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="w-2 h-2 rounded-full bg-green-500/60 animate-breathe" />
-                <span className="text-xs" style={{ color: 'var(--color-slate)' }}>
-                  通话中 00:{String(Math.floor(dialogueIndex * 5)).padStart(2, '0')}
-                </span>
-              </div>
-
-              {/* 对话气泡 */}
+            <div className="flex-1 flex flex-col">
+              {/* 聊天内容 */}
               <div
                 ref={chatContainerRef}
-                className="flex-1 flex flex-col gap-3 overflow-y-auto pr-1"
+                className="flex-1 flex flex-col gap-3 overflow-y-auto px-3 py-4"
                 onClick={handleAdvanceChat}
               >
                 {dialogues.slice(0, dialogueIndex + 1).map((d, i) => {
-                  const style = getBubbleStyle(d.speaker);
                   const isLast = i === dialogueIndex;
+                  const isPlayer = d.speaker === 'player';
+                  const isSystem = d.speaker === 'system';
+
+                  if (isSystem) {
+                    return (
+                      <div key={d.id} className="self-center">
+                        <span className="text-[11px] px-3 py-1 rounded" style={{ color: '#999', backgroundColor: '#dadada' }}>
+                          {d.text}
+                        </span>
+                      </div>
+                    );
+                  }
+
                   return (
                     <div
                       key={d.id}
-                      className={`${style.align} max-w-[85%]`}
-                      style={{
-                        opacity: isLast ? 1 : 0.5,
-                        transition: 'opacity 0.3s',
-                      }}
+                      className={`flex gap-2 ${isPlayer ? 'flex-row-reverse' : 'flex-row'}`}
+                      style={{ opacity: isLast ? 1 : 0.7, transition: 'opacity 0.3s' }}
                     >
+                      {/* 头像 */}
                       <div
-                        className="rounded-2xl px-4 py-2.5 text-sm leading-relaxed"
+                        className="w-9 h-9 rounded flex-shrink-0 flex items-center justify-center text-xs font-bold"
                         style={{
-                          backgroundColor: style.bg,
-                          border: style.border,
-                          color: style.color,
-                          borderBottomLeftRadius: d.speaker === 'caller' ? '4px' : undefined,
-                          borderBottomRightRadius: d.speaker === 'player' ? '4px' : undefined,
+                          backgroundColor: isPlayer ? '#07c160' : '#e0e0e0',
+                          color: isPlayer ? '#fff' : '#666',
+                        }}
+                      >
+                        {isPlayer ? '我' : '妈'}
+                      </div>
+
+                      {/* 气泡 */}
+                      <div
+                        className="max-w-[70%] px-3 py-2 rounded text-sm leading-relaxed relative"
+                        style={{
+                          backgroundColor: isPlayer ? 'var(--color-green)' : '#fff',
+                          color: 'var(--color-green-text)',
+                          border: isPlayer ? 'none' : '1px solid #e0e0e0',
                         }}
                       >
                         {d.text}
+                        {/* 小三角 */}
+                        <div
+                          className="absolute top-3 w-2 h-2 rotate-45"
+                          style={{
+                            backgroundColor: isPlayer ? 'var(--color-green)' : '#fff',
+                            [isPlayer ? 'right' : 'left']: '-4px',
+                            border: isPlayer ? 'none' : '1px solid #e0e0e0',
+                            borderTop: 'none',
+                            borderRight: isPlayer ? 'none' : '1px solid #e0e0e0',
+                            borderBottom: isPlayer ? '1px solid var(--color-green)' : 'none',
+                            borderLeft: isPlayer ? '1px solid var(--color-green)' : 'none',
+                          }}
+                        />
                       </div>
                     </div>
                   );
@@ -168,11 +177,18 @@ export default function PhoneScene() {
                 {/* 点击继续提示 */}
                 {dialogueIndex < dialogues.length && (
                   <div className="self-center mt-2">
-                    <span className="text-xs animate-breathe" style={{ color: 'var(--color-amber-dim)' }}>
+                    <span className="text-[11px] animate-breathe" style={{ color: 'var(--color-text-muted)' }}>
                       点击继续
                     </span>
                   </div>
                 )}
+              </div>
+
+              {/* 底部输入栏 */}
+              <div className="h-12 flex items-center gap-2 px-3 border-t" style={{ backgroundColor: '#f7f7f7', borderColor: '#e0e0e0' }}>
+                <div className="flex-1 h-8 rounded bg-white border flex items-center px-3" style={{ borderColor: '#e0e0e0' }}>
+                  <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>点击继续对话...</span>
+                </div>
               </div>
             </div>
           )}
@@ -182,14 +198,14 @@ export default function PhoneScene() {
             <div className="flex-1 flex flex-col items-center justify-center gap-4">
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(139, 46, 46, 0.15)' }}
+                style={{ backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
               >
-                <PhoneOff size={22} style={{ color: 'var(--color-crimson)' }} />
+                <PhoneOff size={22} style={{ color: 'var(--color-text-muted)' }} />
               </div>
-              <p className="text-sm" style={{ color: 'var(--color-slate)' }}>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                 通话已结束
               </p>
-              <p className="text-xs" style={{ color: 'var(--color-amber-dim)' }}>
+              <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 查看左侧剧情继续……
               </p>
             </div>
@@ -198,38 +214,16 @@ export default function PhoneScene() {
           {/* 默认状态 */}
           {interactionPhase === 'idle' && (
             <div className="flex-1 flex items-center justify-center">
-              <p className="text-sm" style={{ color: 'var(--color-slate)', opacity: 0.5 }}>
-                {activeInteraction ? '准备中……' : '暂无来电'}
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)', opacity: 0.5 }}>
+                {activeInteraction ? '准备中……' : '暂无消息'}
               </p>
             </div>
           )}
         </div>
 
-        {/* 底部操作区 */}
-        <div className="h-16 flex items-center justify-center gap-8 px-8 border-t border-amber-900/10">
-          {/* 挂断按钮 */}
-          <button
-            className="w-12 h-12 rounded-full flex items-center justify-center transition-all cursor-pointer"
-            style={{
-              backgroundColor: 'rgba(139, 46, 46, 0.2)',
-              opacity: interactionPhase === 'ringing' || interactionPhase === 'chatting' ? 1 : 0.3,
-            }}
-            onClick={completeInteraction}
-            disabled={interactionPhase !== 'ringing' && interactionPhase !== 'chatting'}
-          >
-            <PhoneOff size={18} style={{ color: 'var(--color-crimson)' }} />
-          </button>
-
-          {/* 接听按钮 */}
-          {interactionPhase === 'ringing' && (
-            <button
-              className="w-12 h-12 rounded-full flex items-center justify-center animate-breathe cursor-pointer"
-              style={{ backgroundColor: 'rgba(201, 169, 110, 0.2)' }}
-              onClick={handleAnswer}
-            >
-              <Phone size={18} style={{ color: 'var(--color-amber)' }} />
-            </button>
-          )}
+        {/* 底部 home bar */}
+        <div className="h-5 flex items-center justify-center" style={{ backgroundColor: '#1a1a1a' }}>
+          <div className="w-28 h-1 rounded-full" style={{ backgroundColor: '#333' }} />
         </div>
       </div>
     </div>
