@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion';
-import type { ReactNode } from 'react';
+"use client";
+
+import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
 interface FadeInProps {
   children: ReactNode;
@@ -8,12 +10,12 @@ interface FadeInProps {
   className?: string;
 }
 
-export default function FadeIn({ children, delay = 0, duration = 0.6, className = '' }: FadeInProps) {
+export default function FadeIn({ children, delay = 0, duration = 0.6, className = "" }: FadeInProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration, delay, ease: 'easeOut' }}
+      transition={{ duration, delay, ease: "easeOut" }}
       className={className}
     >
       {children}

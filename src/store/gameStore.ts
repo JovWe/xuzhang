@@ -1,7 +1,9 @@
-import { create } from 'zustand';
+"use client";
 
-export type InteractionPhase = 'idle' | 'ringing' | 'connected' | 'chatting' | 'ended';
-export type PhoneView = 'wechat_list' | 'wechat_chat' | 'dialer' | 'call_screen';
+import { create } from "zustand";
+
+export type InteractionPhase = "idle" | "ringing" | "connected" | "chatting" | "ended";
+export type PhoneView = "wechat_list" | "wechat_chat" | "dialer" | "call_screen";
 
 export interface GameState {
   currentSegmentIndex: number;
@@ -33,10 +35,10 @@ const initialState = {
   isTyping: false,
   displayedSegments: 0,
   activeInteraction: null as string | null,
-  interactionPhase: 'idle' as InteractionPhase,
+  interactionPhase: "idle" as InteractionPhase,
   dialogueIndex: 0,
   isInteractionComplete: false,
-  phoneView: 'wechat_list' as PhoneView,
+  phoneView: "wechat_list" as PhoneView,
   currentChatContact: null as string | null,
   collectedItems: [] as string[],
 };
@@ -55,7 +57,7 @@ export const useGameStore = create<GameState>((set) => ({
   triggerInteraction: (interactionId) =>
     set({
       activeInteraction: interactionId,
-      interactionPhase: 'ringing',
+      interactionPhase: "ringing",
       dialogueIndex: 0,
       isInteractionComplete: false,
     }),
@@ -70,7 +72,7 @@ export const useGameStore = create<GameState>((set) => ({
   completeInteraction: () =>
     set({
       isInteractionComplete: true,
-      interactionPhase: 'ended',
+      interactionPhase: "ended",
     }),
 
   setPhoneView: (view) => set({ phoneView: view }),
