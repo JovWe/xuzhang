@@ -13,6 +13,8 @@ export default function StoryPanel() {
     advanceSegment,
     interactionPhase,
     isInteractionComplete,
+    collectedItems,
+    collectItem,
   } = useGameStore();
 
   const segments = prologueData.storySegments;
@@ -24,6 +26,14 @@ export default function StoryPanel() {
 
     if (currentSegment?.waitForInteraction && !isInteractionComplete) {
       return;
+    }
+
+    // Check for item collection triggers
+    if (currentSegment?.text.includes('道具获得')) {
+      const itemMatch = currentSegment.text.match(/【(.+?)】/);
+      if (itemMatch) {
+        collectItem(itemMatch[1]);
+      }
     }
 
     advanceSegment();
@@ -40,16 +50,25 @@ export default function StoryPanel() {
 
   const isLastSegment = currentSegmentIndex >= segments.length - 1;
 
+  // Check if segment is a clue/item reveal
+  const isClueSegment = (text: string) => {
+    return text.includes('【') && text.includes('】');
+  };
+
+  const isNarratorSegment = (text: string) => {
+    return text.startsWith('旁白') || text.includes('旁白（');
+  };
+
   return (
-    <div className="h-full flex flex-col" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <div className="h-full flex flex-col relative" style={{ backgroundColor: 'var(--color-bg)' }}>
       {/* 左侧装饰竖线 */}
-      <div className="absolute left-6 top-14 bottom-0 w-px" style={{ backgroundColor: 'var(--color-line)' }} />
+      <div className="absolute left-6 top-0 bottom-0 w-px" style={{ backgroundColor: 'var(--color-line)' }} />
 
       {/* 装饰图标 */}
-      <div className="absolute left-3 top-20 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <div className="absolute left-3 top-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
         <Compass size={16} style={{ color: 'var(--color-text-muted)' }} />
       </div>
-      <div className="absolute left-3 bottom-20 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
+      <div className="absolute left-3 bottom-6 w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg)' }}>
         <Settings size={16} style={{ color: 'var(--color-text-muted)' }} />
       </div>
 
@@ -57,16 +76,53 @@ export default function StoryPanel() {
       <div className="flex-1 overflow-y-auto pl-16 pr-10 py-8">
         <div className="max-w-lg">
           {/* 已显示的段落 */}
-          {segments.slice(0, displayedSegments).map((seg) => (
-            <FadeIn key={seg.id} delay={0.1} duration={0.4}>
-              <p
-                className="text-base leading-[2.2] mb-5"
-                style={{ color: 'var(--color-text)' }}
-              >
-                {seg.text}
-              </p>
-            </FadeIn>
-          ))}
+          {segments.slice(0, displayedSegments).map((seg) => {
+            const isClue = isClueSegment(seg.text);
+            const isNarrator = isNarratorSegment(seg.text);
+
+            if (isClue) {
+              return (
+                <FadeIn key={seg.id} delay={0.1} duration={0.4}>
+                  <div
+                    className="rounded-xl p-5 mb-5 border"
+                    style={{
+                      backgroundColor: 'var(--color-card)',
+                      borderColor: 'var(--color-card-border)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    <p className="text-base leading-[2.2]" style={{ color: 'var(--color-text)' }}>
+                      {seg.text}
+                    </p>
+                  </div>
+                </FadeIn>
+              );
+            }
+
+            if (isNarrator) {
+              return (
+                <FadeIn key={seg.id} delay={0.1} duration={0.4}>
+                  <p
+                    className="text-base leading-[2.2] mb-5 italic"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    {seg.text}
+                  </p>
+                </FadeIn>
+              );
+            }
+
+            return (
+              <FadeIn key={seg.id} delay={0.1} duration={0.4}>
+                <p
+                  className="text-base leading-[2.2] mb-5"
+                  style={{ color: 'var(--color-text)' }}
+                >
+                  {seg.text}
+                </p>
+              </FadeIn>
+            );
+          })}
 
           {/* 当前正在打的段落 */}
           {currentSegment && currentSegmentIndex === displayedSegments && (
@@ -88,7 +144,7 @@ export default function StoryPanel() {
           {currentSegment?.waitForInteraction && !isInteractionComplete && interactionPhase === 'idle' && (
             <FadeIn delay={0.5}>
               <p className="text-sm mt-6 italic" style={{ color: 'var(--color-text-muted)' }}>
-                等待接听来电……
+                请查看右侧手机……
               </p>
             </FadeIn>
           )}
@@ -96,7 +152,7 @@ export default function StoryPanel() {
           {currentSegment?.waitForInteraction && isInteractionComplete && (
             <FadeIn delay={0.3}>
               <p className="text-sm mt-6 italic" style={{ color: 'var(--color-text-secondary)' }}>
-                通话已结束，点击继续……
+                互动已结束，点击继续……
               </p>
             </FadeIn>
           )}
